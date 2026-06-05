@@ -1,0 +1,198 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="text-center py-20">
+    <h1 class="text-5xl font-extrabold text-gray-800 mb-4">Bienvenido a la Era Dinámica</h1>
+    <p class="text-xl text-gray-600">Este contenido vive dentro de un bloque de Jinja2.</p>
+    <a href="/servicios" class="inline-block mt-8 bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700">
+        Ver Servicios Disponibles
+    </a>
+    <a href="/contacto" class="inline-block mt-8 ml-4 bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700">
+        Contáctanos
+    </a>
+</div>
+
+
+
+
+
+
+<div class="max-w-4xl mx-auto p-6">
+    <h1 class="text-4xl font-extrabold text-gray-800 mb-8">Catálogo de Productos</h1>
+
+    <!-- FORMULARIO DE CREACIÓN (C) -->
+    <section class="bg-indigo-50 p-6 rounded-2xl shadow-sm mb-10">
+        <h2 class="text-lg font-bold text-indigo-900 mb-4">Registrar Nuevo Producto</h2>
+        <form action="/agregar" method="POST" class="flex flex-wrap gap-4">
+            <input type="text" name="nombre" placeholder="Nombre del producto" required
+                   class="flex-grow p-3 rounded-xl border-none ring-1 ring-gray-300 focus:ring-2 focus:ring-indigo-500 outline-none">
+            
+            <input type="number" step="0.01" name="precio" placeholder="Precio ($)" required
+                   class="w-32 p-3 rounded-xl border-none ring-1 ring-gray-300 focus:ring-2 focus:ring-indigo-500 outline-none">
+            
+            <button type="submit" class="bg-indigo-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-indigo-700 transition">
+                Añadir al Inventario
+            </button>
+        </form>
+    </section>
+
+    <!-- TABLA DE LECTURA (R) Y ACCIONES (U / D) -->
+    <div class="bg-white rounded-3xl shadow-xl overflow-hidden">
+        <table class="w-full text-left">
+            <thead class="bg-gray-800 text-white">
+                <tr>
+                    <th class="p-4">ID</th>
+                    <th class="p-4">Producto</th>
+                    <th class="p-4">Precio Unitario</th>
+                    <th class="p-4 text-center">Acciones</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+                {% for p in productos %}
+                <tr class="hover:bg-gray-50 transition">
+                    <td class="p-4 text-gray-400 font-mono">#{{ p.id }}</td>
+                    <td class="p-4 font-semibold text-gray-700">{{ p.nombre }}</td>
+                    <td class="p-4 text-indigo-600 font-bold">${{ "%.2f"|format(p.precio) }}</td>
+                    <td class="p-4 text-center space-x-2">
+                        <!-- Botón para Borrar (D) -->
+                        <a href="/borrar/{{ p.id }}" 
+                           class="inline-block bg-red-100 text-red-600 px-3 py-1 rounded-lg text-sm font-bold hover:bg-red-200"
+                           onclick="return confirm('¿Seguro que quieres eliminar este producto?')">
+                           Eliminar
+                        </a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="4" class="p-10 text-center text-gray-400">
+                        No hay productos en el catálogo. ¡Agrega el primero arriba!
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+
+<div class="max-w-3xl mx-auto">
+        <header class="mb-10 text-center">
+            <h1 class="text-4xl font-black text-slate-900 tracking-tight">Catálogo Interactivo</h1>
+            <p class="text-slate-500">Busca productos en tiempo real usando Fetch API</p>
+        </header>
+
+        <!-- BUSCADOR -->
+        <div class="relative mb-12">
+            <input type="text" id="inputBusqueda" placeholder="Empieza a escribir el nombre de un producto..." 
+                   class="w-full p-5 rounded-2xl shadow-lg border-none ring-1 ring-slate-200 focus:ring-4 focus:ring-indigo-500 outline-none text-lg transition-all">
+            
+            <div id="loader" class="absolute right-5 top-5 hidden">
+                <div class="animate-spin rounded-full h-7 w-7 border-b-2 border-indigo-600"></div>
+            </div>
+        </div>
+
+        <!-- RESULTADOS -->
+        <div id="contenedor-resultados" class="grid gap-6">
+            <div class="text-center py-20 bg-white rounded-3xl border-2 border-dashed border-slate-200 text-slate-400">
+                <p>Escribe en el buscador para ver los resultados de la base de datos.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const input = document.getElementById('inputBusqueda');
+        const contenedor = document.getElementById('contenedor-resultados');
+        const loader = document.getElementById('loader');
+
+        async function realizarBusqueda(texto) {
+            if (texto.length < 2) {
+                contenedor.innerHTML = '<div class="text-center py-20 bg-white rounded-3xl border-2 border-dashed border-slate-200 text-slate-400"><p>Escribe al menos 2 letras...</p></div>';
+                return;
+            }
+
+            loader.classList.remove('hidden');
+
+            try {
+                // Llamamos a nuestra nueva ruta de Python
+                const response = await fetch(`/api/buscar?q=${texto}`);
+                const productos = await response.json();
+
+                contenedor.innerHTML = '';
+
+                if (productos.length === 0) {
+                    contenedor.innerHTML = '<p class="text-center text-slate-500">No se encontraron coincidencias.</p>';
+                } else {
+                    productos.forEach(p => {
+                        const card = `
+                            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex justify-between items-center hover:scale-[1.02] transition-transform">
+                                <div>
+                                    <h3 class="text-xl font-bold text-slate-800">${p.nombre}</h3>
+                                    <p class="text-slate-400 text-sm uppercase font-bold tracking-tighter">${p.categoria}</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-2xl font-black text-indigo-600">$${p.precio.toFixed(2)}</p>
+                                    <span class="text-xs text-slate-300 font-mono">ID: #${p.id}</span>
+                                </div>
+                            </div>
+                        `;
+                        contenedor.innerHTML += card;
+                    });
+                }
+            } catch (error) {
+                console.error("Error en la petición:", error);
+            } finally {
+                loader.classList.add('hidden');
+            }
+        }
+
+        // Escuchar el teclado
+        input.addEventListener('input', (e) => {
+            realizarBusqueda(e.target.value);
+        });
+    </script>
+
+
+
+
+
+
+<div class="max-w-4xl mx-auto mt-20 p-10 bg-white rounded-3xl shadow-2xl border 
+border-slate-100"> 
+    <div class="flex items-center justify-between mb-8"> 
+        <div> 
+            <h1 class="text-4xl font-black text-slate-900">Bienvenido, {{ nombre }} 
+�
+�
+</h1> 
+            <p class="text-slate-500">Este es tu panel privado protegido por sesiones.</p> 
+        </div> 
+        <a href="/logout" class="bg-red-50 text-red-600 px-6 py-2 rounded-xl font-bold 
+hover:bg-red-100 transition"> 
+            Cerrar Sesión 
+        </a> 
+    </div> 
+     
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6"> 
+        <div class="p-6 bg-indigo-600 rounded-2xl text-white"> 
+            <p class="text-indigo-200 text-sm font-bold uppercase">Estado de Seguridad</p> 
+            <h3 class="text-2xl font-bold mt-1">Encriptación Activa</h3> 
+        </div> 
+        <div class="p-6 bg-slate-100 rounded-2xl"> 
+            <p class="text-slate-400 text-sm font-bold uppercase">Tu ID de Sesión</p> 
+            <h3 class="text-2xl font-mono font-bold mt-1 text-slate-700">#{{ session['user_id'] 
+}}</h3> 
+        </div> 
+        <div class="p-6 bg-slate-100 rounded-2xl"> 
+            <p class="text-slate-400 text-sm font-bold uppercase">Acceso</p> 
+            <h3 class="text-2xl font-bold mt-1 text-slate-700">Restringido</h3> 
+        </div> 
+    </div> 
+</div>
+
+
+
+
+
+
+{% endblock %}

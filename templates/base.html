@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ titulo }} | EcoBooking</title>
+    <!-- Usamos Tailwind para diseño rápido -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 flex flex-col min-h-screen">
+
+    <!-- Navegación Global -->
+    <nav class="bg-indigo-600 text-white p-4 shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-xl font-bold">🌿 EcoBooking</h1>
+            <div class="space-x-4">
+                <a href="/" class="hover:text-indigo-200">Inicio</a>
+                <a href="/servicios" class="hover:text-indigo-200">Servicios</a>
+                <a href="/contacto" class="hover:text-indigo-200">Contacto</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenido Dinámico -->
+    <main class="container mx-auto mt-10 p-4 flex-grow">
+        {% block content %}
+        <!-- Aquí se inyectará el código de las otras páginas -->
+        {% endblock %}
+    </main>
+
+    <!-- Pie de Página Global -->
+    <footer class="bg-gray-800 text-gray-400 text-center p-6 mt-10">
+        <p>&copy; 2024 Diseño Web II - Aprendiendo Jinja2</p>
+    </footer>
+
+</body>
+</html>
+

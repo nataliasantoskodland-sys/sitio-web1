@@ -1,0 +1,66 @@
+{% extends "base.html" %} 
+ 
+{% block content %} 
+<div class="max-w-5xl mx-auto py-12"> 
+    <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden"> 
+        <div class="bg-indigo-600 p-8 text-white flex items-center justify-between"> 
+            <div class="flex items-center gap-6"> 
+                <div class="w-20 h-20 bg-indigo-400 rounded-full flex items-center justify-center 
+text-3xl font-bold border-4 border-indigo-300"> 
+                    {{ nombre[0] | upper }} 
+                </div> 
+                <div> 
+                    <h1 class="text-3xl font-black">Panel de {{ nombre }}</h1> 
+                    <p class="text-indigo-100">Sesión iniciada correctamente 
+✅
+</p> 
+                </div> 
+            </div> 
+            <a href="/logout" class="bg-white/10 hover:bg-white/20 px-6 py-2 rounded-xl font-bold 
+transition-all backdrop-blur-md border border-white/20"> 
+                Cerrar Sesión 
+            </a> 
+        </div> 
+ 
+        <div class="p-8 grid grid-cols-1 md:grid-cols-3 gap-6"> 
+            <div class="p-6 bg-slate-50 rounded-2xl border border-slate-100 text-center"> 
+                <p class="text-slate-400 text-xs font-black uppercase tracking-widest mb-1">Tu ID 
+único</p> 
+                <p class="text-2xl font-mono font-bold text-slate-800">#{{ session['user_id'] }}</p> 
+            </div> 
+            <div class="p-6 bg-slate-50 rounded-2xl border border-slate-100 text-center"> 
+                <p class="text-slate-400 text-xs font-black uppercase tracking-widest 
+mb-1">Estado</p> 
+                <p class="text-2xl font-bold text-green-600">Usuario Activo</p> 
+            </div> 
+            <div class="p-6 bg-slate-50 rounded-2xl border border-slate-100 text-center"> 
+                <p class="text-slate-400 text-xs font-black uppercase tracking-widest mb-1">Nivel de 
+Acceso</p> 
+                <p class="text-2xl font-bold text-indigo-600">Administrador</p> 
+            </div> 
+        </div> 
+ 
+        <div class="p-8 border-t border-slate-50"> 
+            <h3 class="text-xl font-bold text-slate-800 mb-4">Acciones Rápidas</h3> 
+            <div class="flex gap-4"> 
+                <a href="/" class="bg-slate-100 text-slate-600 px-6 py-3 rounded-xl font-bold 
+hover:bg-slate-200 transition">Ir al Inicio</a> 
+                <button class="bg-indigo-50 text-indigo-600 px-6 py-3 rounded-xl font-bold 
+hover:bg-indigo-100 transition">Editar Perfil</button> 
+            </div> 
+        </div> 
+    </div> 
+</div> 
+{% endblock %} 
+{% with messages = get_flashed_messages(with_categories=true) %} 
+  {% if messages %} 
+    <div class="max-w-md mx-auto mt-4 space-y-2"> 
+      {% for category, message in messages %} 
+        <div class="p-4 rounded-xl font-bold text-center {{ 'bg-red-100 text-red-600' if category 
+== 'error' else 'bg-green-100 text-green-600' }}"> 
+          {{ message }} 
+        </div> 
+      {% endfor %} 
+    </div> 
+  {% endif %} 
+{% endwith %}

@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="min-h-[85vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-8 bg-white p-10 rounded-3xl shadow-2xl border border-slate-100">
+        
+        <div class="text-center">
+            <div class="mx-auto h-12 w-12 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 mb-4">
+                <i class="fa-solid fa-ticket text-xl"></i>
+            </div>
+            <h2 class="text-3xl font-black text-slate-900 tracking-tight">Sistema de Reservas</h2>
+            <p class="mt-2 text-sm text-slate-500">
+                Completa tus datos para recibir tu ticket con código QR directo en tu WhatsApp.
+            </p>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <div class="space-y-2">
+              {% for category, message in messages %}
+                <div class="p-4 rounded-xl text-sm font-bold text-center 
+                  {% if category == 'success' %} bg-emerald-50 text-emerald-700 border border-emerald-200
+                  {% elif category == 'warning' %} bg-amber-50 text-amber-700 border border-amber-200
+                  {% else %} bg-rose-50 text-rose-700 border border-rose-200 {% endif %}">
+                  {{ message }}
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+
+        <form class="mt-8 space-y-6" action="/reservar" method="POST">
+            <div class="space-y-4">
+                <div>
+                    <label for="nombre" class="block text-sm font-bold text-slate-700 mb-1">Nombre Completo</label>
+                    <input id="nombre" name="nombre" type="text" required 
+                           class="appearance-none rounded-xl relative block w-full px-4 py-3 border border-slate-200 placeholder-slate-400 text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:z-10 sm:text-sm transition-all" 
+                           placeholder="Ej: Juan Pérez">
+                </div>
+
+                <div>
+                    <label for="telefono" class="block text-sm font-bold text-slate-700 mb-1">Número de WhatsApp</label>
+                    <input id="telefono" name="telefono" type="tel" required 
+                           class="appearance-none rounded-xl relative block w-full px-4 py-3 border border-slate-200 placeholder-slate-400 text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:z-10 sm:text-sm transition-all" 
+                           placeholder="Ej: +573001234567">
+                    <p class="mt-1 text-xs text-slate-400">
+                        ⚠️ Obligatorio incluir signo <b>+</b> y código de país (ej: +57 para Colombia).
+                    </p>
+                </div>
+
+                <div>
+                    <label for="servicio" class="block text-sm font-bold text-slate-700 mb-1">Selecciona el Servicio</label>
+                    <select id="servicio" name="servicio" required
+                            class="block w-full px-4 py-3 border border-slate-200 bg-white rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm transition-all">
+                        <option value="" disabled selected>Elige una opción...</option>
+                        <option value="Mentoría Python Avanzado">Mentoría Python Avanzado 🐍</option>
+                        <option value="Taller de Despliegue Flask">Taller de Despliegue Flask 🚀</option>
+                        <option value="Asesoría de Proyecto UI/UX">Asesoría de Proyecto UI/UX 🎨</option>
+                    </select>
+                </div>
+            </div>
+
+            <div>
+                <button type="submit" 
+                        class="group relative w-full flex justify-center py-3.5 px-4 border border-transparent text-sm font-black rounded-xl text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 shadow-lg shadow-emerald-100 transition-all">
+                    <span class="absolute left-0 inset-y-0 flex items-center padding-left pl-3 text-emerald-500 group-hover:text-emerald-400">
+                        <i class="fa-brand fa-whatsapp text-lg"></i>
+                    </span>
+                    Confirmar Reserva y Enviar QR
+                </button>
+            </div>
+        </form>
+        
+    </div>
+</div>
+{% endblock %}
